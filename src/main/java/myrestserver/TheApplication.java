@@ -4,14 +4,12 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +20,9 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 @RestController
@@ -44,7 +45,6 @@ public class TheApplication extends SpringBootServletInitializer {
 	@GetMapping("/user")
 	@ResponseBody
 	public Principal user(Principal user) {
-		System.out.println("user: " + user);
 		return user;
 	}
 
@@ -55,31 +55,24 @@ public class TheApplication extends SpringBootServletInitializer {
 		model.put("id", UUID.randomUUID().toString());
 		model.put("content", "Hello World");
 		return model;
-	}
-	
+	}	
+		
 	@Configuration
 	//@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	//s@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	//@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Autowired
-		private TheAuthenticationProvider authProvider;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http
+				.cors()
+					.and()
 				.httpBasic()
 					.and()
 				.authorizeRequests()
-					.antMatchers("/index.html", "/", "/user").permitAll()
+					.antMatchers("/index.html", "/", "/user", "/login", "/logout", "/tassonomia").permitAll()
 					.antMatchers(HttpMethod.OPTIONS).permitAll()
 					.anyRequest().authenticated()
-					.and()
-				.formLogin()
-					.permitAll()
-					.and()
-				.logout()
-					.permitAll()
 					.and()
 				.csrf()
 					.ignoringAntMatchers("/login","/logout")
@@ -106,7 +99,20 @@ public class TheApplication extends SpringBootServletInitializer {
 					.withUser(User.withUsername("user").password("{noop}password").roles("USER").build())
 					.withUser(User.withUsername("admin").password("{noop}password").roles("USER", "ADMIN").build());
 			
-			auth.authenticationProvider(authProvider);
-		}
+			auth.authenticationProvider(new TheAuthenticationProvider());
+		}		
+
+		@Bean
+		CorsConfigurationSource corsConfigurationSource() {
+			CorsConfiguration configuration = new CorsConfiguration();
+			configuration.setAllowCredentials(true);
+			configuration.addAllowedOrigin("*");
+			configuration.addAllowedMethod("*");
+			configuration.addAllowedHeader("*");
+			configuration.setMaxAge(3600L);
+			UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+			source.registerCorsConfiguration("/**", configuration);
+			return source;
+		}	
 	}	
 }
