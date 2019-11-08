@@ -1,10 +1,11 @@
 package myrestserver;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import myrestserver.data.Habitat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,7 +18,7 @@ import myrestserver.data.TheProperties;
 @CrossOrigin(origins = "*")
 @RestController
 public class HabitatController {
-   
+
    private static final Logger logger = LoggerFactory.getLogger(HabitatController.class);
    private static Map<String, TheProperties> habitat = new HashMap();
 
@@ -42,7 +43,9 @@ public class HabitatController {
       }
 
       logger.info("ritorno " + habitat.size() + " habitat");
-      return new ResponseEntity<>(habitat, HttpStatus.OK);
+      Habitat retValue = new Habitat();
+      retValue.setHabitat(habitat.values());
+      return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
 
 }
