@@ -2,10 +2,10 @@ package myrestserver.data;
 
 import java.util.List;
 
-public class HabitatCollection {
+public class FeaturesCollection {
    String type;
    Long totalFeatures;   
-   List<HabitatFeature> features;
+   List<Feature> features;
 
    public String getType() {
       return type;
@@ -23,11 +23,11 @@ public class HabitatCollection {
       this.totalFeatures = totalFeatures;
    }
 
-   public List<HabitatFeature> getFeatures() {
+   public List<Feature> getFeatures() {
       return features;
    }
 
-   public void setFeatures(List<HabitatFeature> features) {
+   public void setFeatures(List<Feature> features) {
       this.features = features;
    }
    

@@ -3,14 +3,14 @@ package myrestserver.data;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RegioneProperties {
+public class FeatureProperties {
 
    @JsonProperty("codice")
-   @JsonAlias({"COD_REG", "COD_PRO", "COD_CM", "cod_reg", "cod_pro", "cod_cm"})
+   @JsonAlias({"cod_habita","COD_REG", "COD_PRO", "COD_CM", "cod_reg", "cod_pro", "cod_cm"})
    String codice;
 
    @JsonProperty("descrizione")
-   @JsonAlias({"REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro"})
+   @JsonAlias({"nome_habit","REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro"})
    String descrizione;
 
    public String getCodice() {
