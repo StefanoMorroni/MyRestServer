@@ -20,59 +20,131 @@ import myrestserver.data.ResponseItem;
 public class RegProvController {
 
    private static final Logger logger = LoggerFactory.getLogger(RegProvController.class);
-   private static Map<String, ResponseItem> responseItems = new HashMap();
+   private static Map<String, ResponseItem> habitat = new HashMap();
+   private static Map<String, ResponseItem> regioni = new HashMap();
+   private static Map<String, ResponseItem> province = new HashMap();
+   private static Map<String, ResponseItem> cittaMetropolitane = new HashMap();
 
    @GetMapping("/regprov")
    public ResponseEntity<Object> getSuggestions() {
 
-      if (responseItems.isEmpty()) {
+      if (habitat.isEmpty()) {
          synchronized (this) {
-            if (responseItems.isEmpty()) {
-               //getHabitat();
-               getRegioni();
+            if (habitat.isEmpty()) {
+               habitat = getHabitat();
             }
          }
       }
 
-      logger.info("ritorno " + responseItems.size() + " items");
+      if (regioni.isEmpty()) {
+         synchronized (this) {
+            if (regioni.isEmpty()) {
+               regioni = getRegioni();
+            }
+         }
+      }
+      
+      if (province.isEmpty()) {
+         synchronized (this) {
+            if (province.isEmpty()) {
+               province = getProvince();
+            }
+         }
+      }
+
+      if (cittaMetropolitane.isEmpty()) {
+         synchronized (this) {
+            if (cittaMetropolitane.isEmpty()) {
+               cittaMetropolitane = getCittaMetropolitane();
+            }
+         }
+      }
+      
       Response retValue = new Response();
-      retValue.setItems(responseItems.values());
+      retValue.getItems().addAll(habitat.values());
+      retValue.getItems().addAll(regioni.values());
+      retValue.getItems().addAll(province.values());
+      retValue.getItems().addAll(cittaMetropolitane.values());
+      logger.info("ritorno " + retValue.getItems().size() + " items");
       return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
 
-   private void getHabitat() {
+   private Map<String, ResponseItem> getHabitat() {
       logger.info("recupero gli habitat ...");
+      Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
       HabitatCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:habitat_geom&outputFormat=application/json&propertyName=nome_habit,cod_habita",
             HabitatCollection.class);
       logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
             .forEach(item -> {
-               responseItems.put(item.getProperties().getCod_habita(),
+               retValue.put(item.getProperties().getCod_habita(),
                      new ResponseItem(item.getProperties().getCod_habita(),
                            item.getProperties().getCod_habita() + " " + item.getProperties().getNome_habit(),
                            "habitat")
                );
             });
-      logger.info("habitat presenti: " + responseItems.size() + " " + responseItems);
+      logger.info("ritorno " + retValue.size() + " records");
+      return retValue;
    }
 
-   private void getRegioni() {
+   private Map<String, ResponseItem> getRegioni() {
       logger.info("recupero le regioni ...");
+      Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
       RegioniCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:reg_2016_wgs84_g&outputFormat=application/json&propertyName=COD_REG,REGIONE",
             RegioniCollection.class);
-      logger.info("features lette: " + features);
+      logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
             .forEach(item -> {
-               responseItems.put(item.getProperties().getCOD_REG(),
-                     new ResponseItem(item.getProperties().getCOD_REG(),
-                           item.getProperties().getREGIONE(),
+               retValue.put(item.getProperties().getCodice(),
+                     new ResponseItem(item.getProperties().getCodice(),
+                           item.getProperties().getDescrizione(),
                            "regione")
                );
-               
+
             });
-      logger.info("regioni presenti: " + responseItems.size() + " " + responseItems);
+      logger.info("ritorno " + retValue.size() + " records");
+      return retValue;
    }
 
+   private Map<String, ResponseItem> getProvince() {
+      logger.info("recupero le province ...");
+      Map<String, ResponseItem> retValue = new HashMap();
+      RestTemplate restTemplate = new RestTemplate();
+      RegioniCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:cmprov2016_wgs84_g&outputFormat=application/json&CQL_FILTER=FLAG_CMPRO=2&propertyName=COD_PRO,PROVINCIA",
+            RegioniCollection.class);
+      logger.info("features lette: " + features.getTotalFeatures());
+      features.getFeatures()
+            .forEach(item -> {
+               retValue.put(item.getProperties().getCodice(),
+                     new ResponseItem(item.getProperties().getCodice(),
+                           item.getProperties().getDescrizione(),
+                           "provincia")
+               );
+            });
+      logger.info("ritorno " + retValue.size() + " records");
+      return retValue;
+   }
+
+   private Map<String, ResponseItem> getCittaMetropolitane() {
+      logger.info("recupero le citta metropolitane ...");
+      Map<String, ResponseItem> retValue = new HashMap();
+      RestTemplate restTemplate = new RestTemplate();
+      RegioniCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:cmprov2016_wgs84_g&outputFormat=application/json&CQL_FILTER=FLAG_CMPRO=1&propertyName=COD_CM,DEN_CMPRO",
+            RegioniCollection.class);
+      logger.info("features lette: " + features.getTotalFeatures());
+      features.getFeatures()
+            .forEach(item -> {
+               retValue.put(item.getProperties().getCodice(),
+                     new ResponseItem(item.getProperties().getCodice(),
+                           item.getProperties().getDescrizione(),
+                           "den_cmpro")
+               );
+            });
+      logger.info("ritorno " + retValue.size() + " records");
+      return retValue;
+   }
+
+   //
 }
