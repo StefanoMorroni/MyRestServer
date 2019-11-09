@@ -1,6 +1,6 @@
 package myrestserver.data;
 
-public class TheProperties {
+public class HabitatProperties {
 
    String cod_habita;
    String nome_habit;

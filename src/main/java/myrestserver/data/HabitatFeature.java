@@ -1,10 +1,10 @@
 package myrestserver.data;
 
-public class TheFeature {
+public class HabitatFeature {
 
    String type;
    String id;
-   TheProperties properties;
+   HabitatProperties properties;
 
    public String getType() {
       return type;
@@ -22,11 +22,11 @@ public class TheFeature {
       this.id = id;
    }
 
-   public TheProperties getProperties() {
+   public HabitatProperties getProperties() {
       return properties;
    }
 
-   public void setProperties(TheProperties properties) {
+   public void setProperties(HabitatProperties properties) {
       this.properties = properties;
    }
 
