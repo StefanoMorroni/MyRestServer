@@ -42,7 +42,7 @@ public class RegProvController {
             }
          }
       }
-      
+
       if (province.isEmpty()) {
          synchronized (this) {
             if (province.isEmpty()) {
@@ -58,7 +58,7 @@ public class RegProvController {
             }
          }
       }
-      
+
       Response retValue = new Response();
       retValue.getItems().addAll(habitat.values());
       retValue.getItems().addAll(regioni.values());
@@ -80,7 +80,9 @@ public class RegProvController {
                retValue.put(item.getProperties().getCodice(),
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getCodice() + " " + item.getProperties().getDescrizione(),
-                           "habitat")
+                           "habitat",
+                           String.format("&cql_filter=INTERSECTS(geom,collectGeometries(queryCollection('nnb:habitat_geom','the_geom','cod_habita=''%s''')))", item.getProperties().getCodice())
+                     )
                );
             });
       logger.info("ritorno " + retValue.size() + " records");
@@ -99,7 +101,9 @@ public class RegProvController {
                retValue.put(item.getProperties().getCodice(),
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
-                           "regione")
+                           "regione",
+                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:reg_2016_wgs84_g','the_geom','REGIONE=''%s''')))", item.getProperties().getDescrizione())
+                     )
                );
 
             });
@@ -119,7 +123,9 @@ public class RegProvController {
                retValue.put(item.getProperties().getCodice(),
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
-                           "provincia")
+                           "provincia",
+                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:cmprov2016_wgs84_g','the_geom','COD_PRO=''%s''')))", item.getProperties().getCodice())
+                     )
                );
             });
       logger.info("ritorno " + retValue.size() + " records");
@@ -136,9 +142,12 @@ public class RegProvController {
       features.getFeatures()
             .forEach(item -> {
                retValue.put(item.getProperties().getCodice(),
-                     new ResponseItem(item.getProperties().getCodice(),
+                     new ResponseItem(
+                           item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
-                           "den_cmpro")
+                           "den_cmpro",
+                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:cmprov2016_wgs84_g','the_geom','COD_CM=''%s''')))", item.getProperties().getCodice())
+                     )
                );
             });
       logger.info("ritorno " + retValue.size() + " records");

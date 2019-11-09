@@ -3,19 +3,20 @@ package myrestserver.data;
 public class ResponseItem {
 
    String codice;
-   String descrizione;
-   String type;
+   String label;
+   String sublabel;
+   String intersectfilter;
 
    public ResponseItem() {
    }
 
-   public ResponseItem(String codice, String descrizione, String type) {
+   public ResponseItem(String codice, String label, String sublabel, String intersectfilter) {
       this.codice = codice;
-      this.descrizione = descrizione;
-      this.type = type;
+      this.label = label;
+      this.sublabel = sublabel;
+      this.intersectfilter = intersectfilter;
    }
 
-   
    public String getCodice() {
       return codice;
    }
@@ -24,19 +25,27 @@ public class ResponseItem {
       this.codice = codice;
    }
 
-   public String getDescrizione() {
-      return descrizione;
+   public String getLabel() {
+      return label;
    }
 
-   public void setDescrizione(String descrizione) {
-      this.descrizione = descrizione;
+   public void setLabel(String label) {
+      this.label = label;
    }
 
-   public String getType() {
-      return type;
+   public String getSublabel() {
+      return sublabel;
    }
 
-   public void setType(String type) {
-      this.type = type;
+   public void setSublabel(String sublabel) {
+      this.sublabel = sublabel;
+   }
+
+   public String getIntersectfilter() {
+      return intersectfilter;
+   }
+
+   public void setIntersectfilter(String intersectfilter) {
+      this.intersectfilter = intersectfilter;
    }
 }
