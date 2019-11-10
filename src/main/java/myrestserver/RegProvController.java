@@ -2,7 +2,6 @@ package myrestserver;
 
 import java.util.HashMap;
 import java.util.Map;
-import myrestserver.data.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,6 +10,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestParam;
+import myrestserver.data.Response;
 import myrestserver.data.FeaturesCollection;
 import myrestserver.data.ResponseItem;
 
@@ -19,18 +21,43 @@ import myrestserver.data.ResponseItem;
 public class RegProvController {
 
    private static final Logger logger = LoggerFactory.getLogger(RegProvController.class);
+
+   @Value("${HABITAT.URL}")
+   private String HABITAT_URL;
+
+   @Value("${HABITAT.FILTER}")
+   private String HABITAT_FILTER;
+
+   @Value("${REGIONI.URL}")
+   private String REGIONI_URL;
+
+   @Value("${REGIONI.FILTER}")
+   private String REGIONI_FILTER;
+
+   @Value("${PROVINCE.URL}")
+   private String PROVINCE_URL;
+
+   @Value("${PROVINCE.FILTER}")
+   private String PROVINCE_FILTER;
+
+   @Value("${CITTAMETROPOLITANE.URL}")
+   private String CITTAMETROPOLITANE_URL;
+
+   @Value("${CITTAMETROPOLITANE.FILTER}")
+   private String CITTAMETROPOLITANE_FILTER;
+
    private static Map<String, ResponseItem> habitat = new HashMap();
    private static Map<String, ResponseItem> regioni = new HashMap();
    private static Map<String, ResponseItem> province = new HashMap();
    private static Map<String, ResponseItem> cittaMetropolitane = new HashMap();
 
    @GetMapping("/regprov")
-   public ResponseEntity<Object> getSuggestions() {
+   public ResponseEntity<Object> getSuggestions(@RequestParam String serverName) {
 
       if (habitat.isEmpty()) {
          synchronized (this) {
             if (habitat.isEmpty()) {
-               habitat = getHabitat();
+               habitat = getHabitat(HABITAT_URL, HABITAT_FILTER);
             }
          }
       }
@@ -38,7 +65,7 @@ public class RegProvController {
       if (regioni.isEmpty()) {
          synchronized (this) {
             if (regioni.isEmpty()) {
-               regioni = getRegioni();
+               regioni = getRegioni(REGIONI_URL, REGIONI_FILTER);
             }
          }
       }
@@ -46,7 +73,7 @@ public class RegProvController {
       if (province.isEmpty()) {
          synchronized (this) {
             if (province.isEmpty()) {
-               province = getProvince();
+               province = getProvince(PROVINCE_URL, PROVINCE_FILTER);
             }
          }
       }
@@ -54,7 +81,7 @@ public class RegProvController {
       if (cittaMetropolitane.isEmpty()) {
          synchronized (this) {
             if (cittaMetropolitane.isEmpty()) {
-               cittaMetropolitane = getCittaMetropolitane();
+               cittaMetropolitane = getCittaMetropolitane(CITTAMETROPOLITANE_URL, CITTAMETROPOLITANE_FILTER);
             }
          }
       }
@@ -68,11 +95,11 @@ public class RegProvController {
       return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
 
-   private Map<String, ResponseItem> getHabitat() {
+   private Map<String, ResponseItem> getHabitat(String url, String filter) {
       logger.info("recupero gli habitat ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
-      FeaturesCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:habitat_geom&outputFormat=application/json&propertyName=nome_habit,cod_habita",
+      FeaturesCollection features = restTemplate.getForObject(url,
             FeaturesCollection.class);
       logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
@@ -81,7 +108,7 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getCodice() + " " + item.getProperties().getDescrizione(),
                            "habitat",
-                           String.format("&cql_filter=INTERSECTS(geom,collectGeometries(queryCollection('nnb:habitat_geom','the_geom','cod_habita=''%s''')))", item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice())
                      )
                );
             });
@@ -89,11 +116,11 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getRegioni() {
+   private Map<String, ResponseItem> getRegioni(String url, String filter) {
       logger.info("recupero le regioni ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
-      FeaturesCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:reg_2016_wgs84_g&outputFormat=application/json&propertyName=COD_REG,REGIONE",
+      FeaturesCollection features = restTemplate.getForObject(url,
             FeaturesCollection.class);
       logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
@@ -102,7 +129,7 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "regione",
-                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:reg_2016_wgs84_g','the_geom','REGIONE=''%s''')))", item.getProperties().getDescrizione())
+                           String.format(filter, item.getProperties().getDescrizione())
                      )
                );
 
@@ -111,11 +138,11 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getProvince() {
+   private Map<String, ResponseItem> getProvince(String url, String filter) {
       logger.info("recupero le province ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
-      FeaturesCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:cmprov2016_wgs84_g&outputFormat=application/json&CQL_FILTER=FLAG_CMPRO=2&propertyName=COD_PRO,PROVINCIA",
+      FeaturesCollection features = restTemplate.getForObject(url,
             FeaturesCollection.class);
       logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
@@ -124,7 +151,7 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "provincia",
-                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:cmprov2016_wgs84_g','the_geom','COD_PRO=''%s''')))", item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice())
                      )
                );
             });
@@ -132,11 +159,11 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getCittaMetropolitane() {
+   private Map<String, ResponseItem> getCittaMetropolitane(String url, String filter) {
       logger.info("recupero le citta metropolitane ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
-      FeaturesCollection features = restTemplate.getForObject("http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=nnb:cmprov2016_wgs84_g&outputFormat=application/json&CQL_FILTER=FLAG_CMPRO=1&propertyName=COD_CM,DEN_CMPRO",
+      FeaturesCollection features = restTemplate.getForObject(url,
             FeaturesCollection.class);
       logger.info("features lette: " + features.getTotalFeatures());
       features.getFeatures()
@@ -146,7 +173,7 @@ public class RegProvController {
                            item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "den_cmpro",
-                           String.format("&CQL_FILTER=INTERSECTS(geom, collectGeometries(queryCollection('nnb:cmprov2016_wgs84_g','the_geom','COD_CM=''%s''')))", item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice())
                      )
                );
             });
