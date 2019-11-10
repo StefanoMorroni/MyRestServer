@@ -52,7 +52,7 @@ public class RegProvController {
    private static Map<String, ResponseItem> cittaMetropolitane = new HashMap();
 
    @GetMapping("/regprov")
-   public ResponseEntity<Object> getSuggestions(@RequestParam String serverName) {
+   public ResponseEntity<Object> getSuggestions() {
 
       if (habitat.isEmpty()) {
          synchronized (this) {
