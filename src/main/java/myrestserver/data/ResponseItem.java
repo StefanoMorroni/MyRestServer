@@ -2,10 +2,11 @@ package myrestserver.data;
 
 public class ResponseItem {
 
-   String codice;
-   String label;
-   String sublabel;
-   String intersectfilter;
+   private String codice;
+   private String label;
+   private String sublabel;
+   private String intersectfilter;
+   private String wfsGetFeaturesUrl;
 
    public ResponseItem() {
    }
@@ -15,6 +16,14 @@ public class ResponseItem {
       this.label = label;
       this.sublabel = sublabel;
       this.intersectfilter = intersectfilter;
+   }
+
+   public ResponseItem(String codice, String label, String sublabel, String intersectfilter, String wfsGetFeaturesUrl) {
+      this.codice = codice;
+      this.label = label;
+      this.sublabel = sublabel;
+      this.intersectfilter = intersectfilter;
+      this.wfsGetFeaturesUrl = wfsGetFeaturesUrl;
    }
 
    public String getCodice() {
@@ -47,5 +56,13 @@ public class ResponseItem {
 
    public void setIntersectfilter(String intersectfilter) {
       this.intersectfilter = intersectfilter;
+   }
+
+   public String getWfsGetFeaturesUrl() {
+      return wfsGetFeaturesUrl;
+   }
+
+   public void setWfsGetFeaturesUrl(String wfsGetFeaturesUrl) {
+      this.wfsGetFeaturesUrl = wfsGetFeaturesUrl;
    }
 }

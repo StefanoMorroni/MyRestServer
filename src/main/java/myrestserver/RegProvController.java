@@ -24,27 +24,31 @@ public class RegProvController {
 
    @Value("${HABITAT.URL}")
    private String HABITAT_URL;
-
    @Value("${HABITAT.FILTER}")
    private String HABITAT_FILTER;
-
+   @Value("${HABITAT.GETFEATURESURL}")
+   private String HABITAT_GETFEATURESURL;
+      
    @Value("${REGIONI.URL}")
    private String REGIONI_URL;
-
    @Value("${REGIONI.FILTER}")
    private String REGIONI_FILTER;
+   @Value("${REGIONI.GETFEATURESURL}")
+   private String REGIONI_GETFEATURESURL;
 
    @Value("${PROVINCE.URL}")
    private String PROVINCE_URL;
-
    @Value("${PROVINCE.FILTER}")
    private String PROVINCE_FILTER;
-
+   @Value("${PROVINCE.GETFEATURESURL}")
+   private String PROVINCE_GETFEATURESURL;
+   
    @Value("${CITTAMETROPOLITANE.URL}")
    private String CITTAMETROPOLITANE_URL;
-
    @Value("${CITTAMETROPOLITANE.FILTER}")
    private String CITTAMETROPOLITANE_FILTER;
+   @Value("${CITTAMETROPOLITANE.GETFEATURESURL}")
+   private String CITTAMETROPOLITANE_GETFEATURESURL;
 
    private static Map<String, ResponseItem> habitat = new HashMap();
    private static Map<String, ResponseItem> regioni = new HashMap();
@@ -57,7 +61,7 @@ public class RegProvController {
       if (habitat.isEmpty()) {
          synchronized (this) {
             if (habitat.isEmpty()) {
-               habitat = getHabitat(HABITAT_URL, HABITAT_FILTER);
+               habitat = getHabitat(HABITAT_URL, HABITAT_FILTER, HABITAT_GETFEATURESURL);
             }
          }
       }
@@ -65,7 +69,7 @@ public class RegProvController {
       if (regioni.isEmpty()) {
          synchronized (this) {
             if (regioni.isEmpty()) {
-               regioni = getRegioni(REGIONI_URL, REGIONI_FILTER);
+               regioni = getRegioni(REGIONI_URL, REGIONI_FILTER, REGIONI_GETFEATURESURL);
             }
          }
       }
@@ -73,7 +77,7 @@ public class RegProvController {
       if (province.isEmpty()) {
          synchronized (this) {
             if (province.isEmpty()) {
-               province = getProvince(PROVINCE_URL, PROVINCE_FILTER);
+               province = getProvince(PROVINCE_URL, PROVINCE_FILTER, PROVINCE_GETFEATURESURL);
             }
          }
       }
@@ -81,7 +85,7 @@ public class RegProvController {
       if (cittaMetropolitane.isEmpty()) {
          synchronized (this) {
             if (cittaMetropolitane.isEmpty()) {
-               cittaMetropolitane = getCittaMetropolitane(CITTAMETROPOLITANE_URL, CITTAMETROPOLITANE_FILTER);
+               cittaMetropolitane = getCittaMetropolitane(CITTAMETROPOLITANE_URL, CITTAMETROPOLITANE_FILTER, CITTAMETROPOLITANE_GETFEATURESURL);
             }
          }
       }
@@ -95,7 +99,7 @@ public class RegProvController {
       return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
 
-   private Map<String, ResponseItem> getHabitat(String url, String filter) {
+   private Map<String, ResponseItem> getHabitat(String url, String filter, String getFeaturesUrl) {
       logger.info("recupero gli habitat ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
@@ -108,7 +112,8 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getCodice() + " " + item.getProperties().getDescrizione(),
                            "habitat",
-                           String.format(filter, item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice()),
+                           String.format(getFeaturesUrl, item.getProperties().getCodice())
                      )
                );
             });
@@ -116,7 +121,7 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getRegioni(String url, String filter) {
+   private Map<String, ResponseItem> getRegioni(String url, String filter, String getFeaturesUrl) {
       logger.info("recupero le regioni ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
@@ -129,7 +134,8 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "regione",
-                           String.format(filter, item.getProperties().getDescrizione())
+                           String.format(filter, item.getProperties().getDescrizione()),
+                           String.format(getFeaturesUrl, item.getProperties().getDescrizione())
                      )
                );
 
@@ -138,7 +144,7 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getProvince(String url, String filter) {
+   private Map<String, ResponseItem> getProvince(String url, String filter, String getFeaturesUrl) {
       logger.info("recupero le province ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
@@ -151,7 +157,8 @@ public class RegProvController {
                      new ResponseItem(item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "provincia",
-                           String.format(filter, item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice()),
+                           String.format(getFeaturesUrl, item.getProperties().getCodice())
                      )
                );
             });
@@ -159,7 +166,7 @@ public class RegProvController {
       return retValue;
    }
 
-   private Map<String, ResponseItem> getCittaMetropolitane(String url, String filter) {
+   private Map<String, ResponseItem> getCittaMetropolitane(String url, String filter, String getFeaturesUrl) {
       logger.info("recupero le citta metropolitane ...");
       Map<String, ResponseItem> retValue = new HashMap();
       RestTemplate restTemplate = new RestTemplate();
