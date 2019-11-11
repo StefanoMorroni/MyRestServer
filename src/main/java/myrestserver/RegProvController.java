@@ -180,7 +180,8 @@ public class RegProvController {
                            item.getProperties().getCodice(),
                            item.getProperties().getDescrizione(),
                            "den_cmpro",
-                           String.format(filter, item.getProperties().getCodice())
+                           String.format(filter, item.getProperties().getCodice()),
+                           String.format(getFeaturesUrl, item.getProperties().getCodice())
                      )
                );
             });
