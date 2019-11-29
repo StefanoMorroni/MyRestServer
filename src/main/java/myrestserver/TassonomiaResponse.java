@@ -10,7 +10,7 @@ public class TassonomiaResponse {
    private List<String> family;
    private List<String> genus;
    private List<String> nome_scientifico;
-   private List<String> canonicalName;
+   private List<String> canonicalname;
    private List<String> provider;
 
    public List<String> getOrdo() {
@@ -46,11 +46,11 @@ public class TassonomiaResponse {
    }
 
    public List<String> getCanonicalName() {
-      return canonicalName;
+      return canonicalname;
    }
 
-   public void setCanonicalName(List<String> canonicalName) {
-      this.canonicalName = canonicalName;
+   public void setCanonicalName(List<String> canonicalname) {
+      this.canonicalname = canonicalname;
    }
 
    public List<String> getProvider() {

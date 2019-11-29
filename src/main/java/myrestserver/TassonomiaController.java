@@ -34,7 +34,7 @@ public class TassonomiaController {
    private static List<String> family = new ArrayList();
    private static List<String> genus = new ArrayList();
    private static List<String> nomeScientifico = new ArrayList();
-   private static List<String> canonicalName = new ArrayList();
+   private static List<String> canonicalname = new ArrayList();
    private static List<String> provider = new ArrayList();
 
    @GetMapping("/tassonomia")
@@ -75,10 +75,10 @@ public class TassonomiaController {
          }
       }      
 
-      if (canonicalName.isEmpty()) {
+      if (canonicalname.isEmpty()) {
          synchronized (this) {
-            if (canonicalName.isEmpty()) {
-               canonicalName = execQuery("canonicalname");
+            if (canonicalname.isEmpty()) {
+               canonicalname = execQuery("canonicalname");
             }
          }
       }
@@ -120,7 +120,7 @@ public class TassonomiaController {
       );
       
       retValue.setCanonicalName(
-            canonicalName.stream()
+            canonicalname.stream()
                   .filter(item -> item.toLowerCase().contains(name))
                   .distinct()
                   .collect(Collectors.toList())
