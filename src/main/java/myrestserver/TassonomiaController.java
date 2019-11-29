@@ -33,13 +33,15 @@ public class TassonomiaController {
    private static List<String> ordo = new ArrayList();
    private static List<String> family = new ArrayList();
    private static List<String> genus = new ArrayList();
+   private static List<String> nomeScientifico = new ArrayList();
    private static List<String> canonicalName = new ArrayList();
    private static List<String> provider = new ArrayList();
 
    @GetMapping("/tassonomia")
-   public ResponseEntity<Object> getSuggestions(@RequestParam(value = "name", required = false) String name) throws Exception {
+   public ResponseEntity<Object> getSuggestions(@RequestParam(value = "name", required = false) String theName) throws Exception {
 
       TassonomiaResponse retValue = new TassonomiaResponse();
+      String name = theName.toLowerCase();
 
       if (ordo.isEmpty()) {
          synchronized (this) {
@@ -64,11 +66,27 @@ public class TassonomiaController {
             }
          }
       }
+      
+      if (nomeScientifico.isEmpty()) {
+         synchronized (this) {
+            if (nomeScientifico.isEmpty()) {
+               nomeScientifico = execQuery("nome_scientifico");
+            }
+         }
+      }      
 
       if (canonicalName.isEmpty()) {
          synchronized (this) {
             if (canonicalName.isEmpty()) {
                canonicalName = execQuery("canonicalname");
+            }
+         }
+      }
+
+      if (provider.isEmpty()) {
+         synchronized (this) {
+            if (provider.isEmpty()) {
+               provider = execQuery("provider");
             }
          }
       }
@@ -94,6 +112,13 @@ public class TassonomiaController {
                   .collect(Collectors.toList())
       );
 
+      retValue.setNome_scientifico(
+            nomeScientifico.stream()
+                  .filter(item -> item.toLowerCase().contains(name))
+                  .distinct()
+                  .collect(Collectors.toList())
+      );
+      
       retValue.setCanonicalName(
             canonicalName.stream()
                   .filter(item -> item.toLowerCase().contains(name))
@@ -101,6 +126,13 @@ public class TassonomiaController {
                   .collect(Collectors.toList())
       );
 
+      retValue.setProvider(
+            provider.stream()
+                  .filter(item -> item.toLowerCase().contains(name))
+                  .distinct()
+                  .collect(Collectors.toList())
+      );
+      
       retValue.setProvider(new ArrayList());
 
       return new ResponseEntity<>(retValue, HttpStatus.OK);
@@ -108,26 +140,28 @@ public class TassonomiaController {
 
    private List<String> execQuery(String theField) throws Exception, SQLException {
       List<String> retValue = new ArrayList();
+      try {
+         String thequery = QUERY.replace("<FIELD>", theField);
+         logger.info(thequery);
 
-      String thequery = QUERY.replace("<FIELD>", theField);
-      logger.info(thequery);
-
-      InitialContext cxt = new InitialContext();
-      DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/thedb");
-      if (ds == null) {
-         throw new Exception("Data source not found!");
+         InitialContext cxt = new InitialContext();
+         DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/thedb");
+         if (ds == null) {
+            throw new Exception("Data source not found!");
+         }
+         Connection c = ds.getConnection();
+         c.setAutoCommit(false);
+         Statement stmt = c.createStatement();
+         ResultSet rs = stmt.executeQuery(thequery);
+         while (rs.next()) {
+            retValue.add(rs.getString(theField));
+         }
+         rs.close();
+         stmt.close();
+         c.close();
+         logger.info(thequery + ", nrec = " + retValue.size());
+      } catch (Exception e) {
       }
-      Connection c = ds.getConnection();
-      c.setAutoCommit(false);
-      Statement stmt = c.createStatement();
-      ResultSet rs = stmt.executeQuery(thequery);
-      while (rs.next()) {
-         retValue.add(rs.getString(theField));
-      }
-      rs.close();
-      stmt.close();
-      c.close();
-      logger.info(thequery + ", nrec = " + retValue.size());
       return retValue;
    }
 
