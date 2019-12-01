@@ -9,7 +9,6 @@ public class TassonomiaResponse {
    private List<String> ordo;
    private List<String> family;
    private List<String> genus;
-   private List<String> nome_scientifico;
    private List<String> canonicalname;
    private List<String> provider;
 
@@ -35,14 +34,6 @@ public class TassonomiaResponse {
 
    public void setGenus(List<String> genus) {
       this.genus = genus;
-   }
-
-   public List<String> getNome_scientifico() {
-      return nome_scientifico;
-   }
-
-   public void setNome_scientifico(List<String> nome_scientifico) {
-      this.nome_scientifico = nome_scientifico;
    }
 
    public List<String> getCanonicalName() {

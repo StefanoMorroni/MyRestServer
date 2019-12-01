@@ -39,14 +39,15 @@ public class TassonomiaController {
 
    @GetMapping("/tassonomia")
    public ResponseEntity<Object> getSuggestions(@RequestParam(value = "name", required = false) String theName,
-         @RequestParam(value = "osservazioni", required = false) String flagOsservazioni,
-         @RequestParam(value = "citizenscience", required = false) String flagCitizenscience,
-         @RequestParam(value = "provider", required = false) String flagProvider
+         @RequestParam(value = "osservazioni", required = false, defaultValue = "true") String flagOsservazioni,
+         @RequestParam(value = "citizenscience", required = false, defaultValue = "true") String flagCitizenscience,
+         @RequestParam(value = "provider", required = false, defaultValue = "true") String flagProvider
    ) throws Exception {
 
       TassonomiaResponse retValue = new TassonomiaResponse();
       String name = theName.toLowerCase();
 
+      logger.info("name: " + name + ", osservazioni:" + flagOsservazioni + ", citizenscience:" + flagCitizenscience + ", provider:" + flagProvider);
       if (ordo.isEmpty()) {
          synchronized (this) {
             if (ordo.isEmpty()) {
@@ -99,23 +100,19 @@ public class TassonomiaController {
             .filter(item -> item.getValue().toLowerCase().contains(name))
             .filter(item -> {
                if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                  if (flagOsservazioni != null) {
-                     if (flagOsservazioni.equalsIgnoreCase("true")) {
-                        return true;
-                     }
-                     return false;
+                  if (flagOsservazioni.equalsIgnoreCase("true")) {
+                     return true;
                   }
+                  return false;
                }
                return true;
             })
             .filter(item -> {
                if (item.getSource().equalsIgnoreCase("citizenscience")) {
-                  if (flagCitizenscience != null) {
-                     if (flagCitizenscience.equalsIgnoreCase("true")) {
-                        return true;
-                     }
-                     return false;
+                  if (flagCitizenscience.equalsIgnoreCase("true")) {
+                     return true;
                   }
+                  return false;
                }
                return true;
             })
@@ -129,23 +126,19 @@ public class TassonomiaController {
                   .filter(item -> item.getValue().toLowerCase().contains(name))
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                        if (flagOsservazioni != null) {
-                           if (flagOsservazioni.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagOsservazioni.equalsIgnoreCase("true")) {
+                           return true;
                         }
+                        return false;
                      }
                      return true;
                   })
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("citizenscience")) {
-                        if (flagCitizenscience != null) {
-                           if (flagCitizenscience.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagCitizenscience.equalsIgnoreCase("true")) {
+                           return true;
                         }
+                        return false;
                      }
                      return true;
                   })
@@ -159,53 +152,19 @@ public class TassonomiaController {
                   .filter(item -> item.getValue().toLowerCase().contains(name))
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                        if (flagOsservazioni != null) {
-                           if (flagOsservazioni.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagOsservazioni.equalsIgnoreCase("true")) {
+                           return true;
                         }
+                        return false;
                      }
                      return true;
                   })
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("CITIZENSCIENCE")) {
-                        if (flagCitizenscience != null) {
-                           if (flagCitizenscience.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagCitizenscience.equalsIgnoreCase("true")) {
+                           return true;
                         }
-                     }
-                     return true;
-                  })
-                  .map(item -> item.getValue())
-                  .distinct()
-                  .collect(Collectors.toList())
-      );
-
-      retValue.setNome_scientifico(
-            nomeScientifico.stream()
-                  .filter(item -> item.getValue().toLowerCase().contains(name))
-                  .filter(item -> {
-                     if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                        if (flagOsservazioni != null) {
-                           if (flagOsservazioni.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
-                        }
-                     }
-                     return true;
-                  })
-                  .filter(item -> {
-                     if (item.getSource().equalsIgnoreCase("CITIZENSCIENCE")) {
-                        if (flagCitizenscience != null) {
-                           if (flagCitizenscience.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
-                        }
+                        return false;
                      }
                      return true;
                   })
@@ -219,23 +178,19 @@ public class TassonomiaController {
                   .filter(item -> item.getValue().toLowerCase().contains(name))
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                        if (flagOsservazioni != null) {
-                           if (flagOsservazioni.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagOsservazioni.equalsIgnoreCase("true")) {
+                           return true;
                         }
+                        return false;
                      }
                      return true;
                   })
                   .filter(item -> {
                      if (item.getSource().equalsIgnoreCase("CITIZENSCIENCE")) {
-                        if (flagCitizenscience != null) {
-                           if (flagCitizenscience.equalsIgnoreCase("true")) {
-                              return true;
-                           }
-                           return false;
+                        if (flagCitizenscience.equalsIgnoreCase("true")) {
+                           return true;
                         }
+                        return false;
                      }
                      return true;
                   })
@@ -244,29 +199,25 @@ public class TassonomiaController {
                   .collect(Collectors.toList())
       );
 
-      if (flagProvider != null) {
+      if (flagProvider.equalsIgnoreCase("true")) {
          retValue.setProvider(
                provider.stream()
-                     .filter(item -> item.getValue().toLowerCase().contains(name))
+                     .filter(item -> item.getValue().toLowerCase().contains(name))                
                      .filter(item -> {
                         if (item.getSource().equalsIgnoreCase("osservazioni")) {
-                           if (flagOsservazioni != null) {
-                              if (flagOsservazioni.equalsIgnoreCase("true")) {
-                                 return true;
-                              }
-                              return false;
+                           if (flagOsservazioni.equalsIgnoreCase("true")) {
+                              return true;
                            }
+                           return false;
                         }
                         return true;
-                     })
+                     })                     
                      .filter(item -> {
                         if (item.getSource().equalsIgnoreCase("CITIZENSCIENCE")) {
-                           if (flagCitizenscience != null) {
-                              if (flagCitizenscience.equalsIgnoreCase("true")) {
-                                 return true;
-                              }
-                              return false;
+                           if (flagCitizenscience.equalsIgnoreCase("true")) {
+                              return true;
                            }
+                           return false;
                         }
                         return true;
                      })
@@ -275,8 +226,6 @@ public class TassonomiaController {
                      .collect(Collectors.toList())
          );
       }
-
-      retValue.setProvider(new ArrayList());
 
       return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
