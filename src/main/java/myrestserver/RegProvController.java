@@ -91,10 +91,10 @@ public class RegProvController {
       }
 
       Response retValue = new Response();
-      retValue.getItems().addAll(habitat.values());
       retValue.getItems().addAll(regioni.values());
       retValue.getItems().addAll(province.values());
       retValue.getItems().addAll(cittaMetropolitane.values());
+      retValue.getItems().addAll(habitat.values());
       logger.info("ritorno " + retValue.getItems().size() + " items");
       return new ResponseEntity<>(retValue, HttpStatus.OK);
    }
