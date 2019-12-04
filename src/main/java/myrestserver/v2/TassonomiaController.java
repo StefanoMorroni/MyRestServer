@@ -118,6 +118,7 @@ public class TassonomiaController {
             })
             .map(item -> item.getValue())
             .distinct()
+            .limit(5)
             .collect(Collectors.toList())
       );
 
@@ -144,6 +145,7 @@ public class TassonomiaController {
                   })
                   .map(item -> item.getValue())
                   .distinct()
+                  .limit(5)
                   .collect(Collectors.toList())
       );
 
@@ -170,6 +172,7 @@ public class TassonomiaController {
                   })
                   .map(item -> item.getValue())
                   .distinct()
+                  .limit(5)
                   .collect(Collectors.toList())
       );
 
@@ -196,6 +199,7 @@ public class TassonomiaController {
                   })
                   .map(item -> item.getValue())
                   .distinct()
+                  .limit(5)
                   .collect(Collectors.toList())
       );
 
@@ -223,6 +227,7 @@ public class TassonomiaController {
                      })
                      .map(item -> item.getValue())
                      .distinct()
+                     .limit(5)
                      .collect(Collectors.toList())
          );
       }
