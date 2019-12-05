@@ -176,7 +176,7 @@ public class TassonomiaController {
                   .collect(Collectors.toList())
       );
 
-      retValue.setCanonicalName(
+      retValue.setCanonicalname(
             canonicalname.stream()
                   .filter(item -> item.getValue().toLowerCase().contains(name))
                   .filter(item -> {

@@ -36,11 +36,11 @@ public class TassonomiaResponse {
       this.genus = genus;
    }
 
-   public List<String> getCanonicalName() {
+   public List<String> getCanonicalname() {
       return canonicalname;
    }
 
-   public void setCanonicalName(List<String> canonicalname) {
+   public void setCanonicalname(List<String> canonicalname) {
       this.canonicalname = canonicalname;
    }
 
