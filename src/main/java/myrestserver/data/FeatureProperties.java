@@ -10,7 +10,7 @@ public class FeatureProperties {
    String codice;
 
    @JsonProperty("descrizione")
-   @JsonAlias({"nome_habit","nome_habitat","REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro"})
+   @JsonAlias({"denominazi","nome_habit","nome_habitat","REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro"})
    String descrizione;
 
    public String getCodice() {
