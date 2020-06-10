@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FeatureProperties {
 
    @JsonProperty("codice")
-   @JsonAlias({"cod_habita","cod_habitat","COD_REG", "COD_PRO", "COD_CM", "cod_reg", "cod_pro", "cod_cm"}) //cod_habitat":"9180","nome_habitat
+   @JsonAlias({"cod_habita","cod_habitat","COD_REG", "COD_PRO", "COD_CM", "cod_reg", "cod_pro", "cod_cm", "pro_com"})
    String codice;
 
    @JsonProperty("descrizione")
-   @JsonAlias({"denominazi","nome_habit","nome_habitat","REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro"})
+   @JsonAlias({"denominazi","nome_habit","nome_habitat","REGIONE", "PROVINCIA", "DEN_CMPRO", "regione", "provincia", "den_cmpro", "comune"})
    String descrizione;
 
    public String getCodice() {
