@@ -23,13 +23,6 @@ public class AreaInteresseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AreaInteresseController.class);
 
-	@Value("${HABITAT.URL}")
-	private String HABITAT_URL;
-	@Value("${HABITAT.FILTER}")
-	private String HABITAT_FILTER;
-	@Value("${HABITAT.GETFEATURESURL}")
-	private String HABITAT_GETFEATURESURL;
-
 	@Value("${SICZPS.URL}")
 	private String SICZPS_URL;
 	@Value("${SICZPS.FILTER}")
@@ -65,7 +58,6 @@ public class AreaInteresseController {
 	@Value("${COMUNI.GETFEATURESURL}")
 	private String COMUNI_GETFEATURESURL;
 
-	private static Map<String, ResponseItem> habitat = new HashMap();
 	private static Map<String, ResponseItem> siczps = new HashMap();
 	private static Map<String, ResponseItem> regioni = new HashMap();
 	private static Map<String, ResponseItem> province = new HashMap();
@@ -74,14 +66,6 @@ public class AreaInteresseController {
 
 	@GetMapping("/regprov")
 	public ResponseEntity<Object> getSuggestions() {
-
-		if (habitat.isEmpty()) {
-			synchronized (this) {
-				if (habitat.isEmpty()) {
-					habitat = getHabitat(HABITAT_URL, HABITAT_FILTER, HABITAT_GETFEATURESURL);
-				}
-			}
-		}
 
 		if (siczps.isEmpty()) {
 			synchronized (this) {
@@ -128,32 +112,9 @@ public class AreaInteresseController {
 		retValue.getItems().addAll(province.values());
 		retValue.getItems().addAll(cittaMetropolitane.values());
 		retValue.getItems().addAll(comuni.values());
-		retValue.getItems().addAll(habitat.values());
 		retValue.getItems().addAll(siczps.values());
 		logger.info("ritorno " + retValue.getItems().size() + " items");
 		return new ResponseEntity<>(retValue, HttpStatus.OK);
-	}
-
-	private Map<String, ResponseItem> getHabitat(String url, String filter, String getFeaturesUrl) {
-		logger.info("recupero gli habitat ...");
-		Map<String, ResponseItem> retValue = new HashMap();
-		RestTemplate restTemplate = new RestTemplate();
-		FeaturesCollection features = restTemplate.getForObject(url,
-				FeaturesCollection.class);
-		logger.info("features lette: " + features.getTotalFeatures());
-		features.getFeatures()
-				.forEach(item -> {
-					retValue.put(item.getProperties().getCodice(),
-							new ResponseItem(item.getProperties().getCodice(),
-									item.getProperties().getCodice() + " " + item.getProperties().getDescrizione(),
-									"habitat",
-									String.format(filter, item.getProperties().getCodice()),
-									String.format(getFeaturesUrl, item.getProperties().getCodice())
-							)
-					);
-				});
-		logger.info("ritorno " + retValue.size() + " records");
-		return retValue;
 	}
 
 	private Map<String, ResponseItem> getSicZps(String url, String filter, String getFeaturesUrl) {
