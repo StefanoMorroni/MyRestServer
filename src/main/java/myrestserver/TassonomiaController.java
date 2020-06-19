@@ -1,4 +1,4 @@
-package myrestserver.v2;
+package myrestserver;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping(value = "/v2")
 public class TassonomiaController {
 
    private static final Logger logger = LoggerFactory.getLogger(TassonomiaController.class);

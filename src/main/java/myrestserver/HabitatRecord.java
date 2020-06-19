@@ -1,4 +1,4 @@
-package myrestserver.v2;
+package myrestserver;
 
 
 public class HabitatRecord {

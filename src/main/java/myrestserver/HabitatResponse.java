@@ -1,4 +1,4 @@
-package myrestserver.v2;
+package myrestserver;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
